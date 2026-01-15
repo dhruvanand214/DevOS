@@ -2,7 +2,8 @@ import CreateTaskRow from "../components/CreateTaskRow";
 import TaskItem from "../components/TaskItem";
 import { useAppContext } from "../context/AppContext";
 import { useKeyboard } from "../hooks/useKeyboard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createTask, fetchTasks } from "../utils/api";
 
 type TaskStatus = "todo" | "in-progress" | "done";
 type TaskPriority = 1 | 2 | 3;
@@ -28,37 +29,17 @@ function getStatusLabel(status: TaskStatus) {
 export default function Tasks() {
   const [filter, setFilter] = useState<TaskStatus | "all">("all");
   const { isCreatingTask, cancelCreateTask } = useAppContext();
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: "1",
-      title: "Design DevOS app shell",
-      status: "done",
-      priority: 2,
-    },
-    {
-      id: "2",
-      title: "Implement Tasks UI",
-      status: "in-progress",
-      priority: 1,
-    },
-    {
-      id: "3",
-      title: "Add keyboard navigation",
-      status: "todo",
-      priority: 3,
-    },
-  ]);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
-  function handleCreateTask(title: string) {
-    setTasks((prev) => [
-      {
-        id: crypto.randomUUID(),
-        title,
-        status: "todo",
-        priority: 2,
-      },
-      ...prev,
-    ]);
+  useEffect(() => {
+    fetchTasks().then((data) => {
+      setTasks(data);
+    });
+  }, []);
+
+  async function handleCreateTask(title: string) {
+    const newTask = await createTask(title);
+    setTasks((prev) => [...prev, newTask]);
 
     cancelCreateTask();
   }

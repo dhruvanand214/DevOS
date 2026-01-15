@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import { useKeyboard } from "../hooks/useKeyboard";
+import { fetchNotes, updateNote } from "../utils/api";
 
 interface Note {
   id: string;
@@ -11,26 +12,12 @@ interface Note {
 
 export default function Notes() {
 
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      id: "1",
-      title: "DevOS Vision",
-      content: `# DevOS
-
-A keyboard-first developer productivity system.
-`,
-      updatedAt: "2026-01-15",
-    },
-    {
-      id: "2",
-      title: "Command Palette Ideas",
-      content: `## Commands
-- Create task
-- Open note
-`,
-      updatedAt: "2026-01-14",
-    },
-  ]);
+  const [notes, setNotes] = useState<Note[]>([]);
+  useEffect(() => {
+    fetchNotes().then((data) => {
+      setNotes(data);
+    });
+  }, []);
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -41,6 +28,16 @@ A keyboard-first developer productivity system.
   const selectedNote = notes.find(
     (note) => note.id === activeNoteId
   );
+
+  useEffect(() => {
+    if (!isEditing && selectedNote) {
+      updateNote(selectedNote.id, {
+        title: selectedNote.title,
+        content: selectedNote.content,
+      });
+    }
+  }, [isEditing, selectedNote]);
+
 
   useKeyboard((e) => {
     if (isEditing) return;
@@ -105,10 +102,9 @@ A keyboard-first developer productivity system.
 
       {/* Editor */}
       <div
-  className={`flex-1 flex flex-col ${
-    isEditing ? "ring-1 ring-neutral-700 rounded p-2" : ""
-  }`}
->
+        className={`flex-1 flex flex-col ${isEditing ? "ring-1 ring-neutral-700 rounded p-2" : ""
+          }`}
+      >
 
         {selectedNote ? (
           <>
