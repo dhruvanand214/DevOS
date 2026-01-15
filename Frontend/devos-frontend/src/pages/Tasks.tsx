@@ -1,3 +1,4 @@
+import TaskItem from "../components/TaskItem";
 import { useKeyboard } from "../hooks/useKeyboard";
 
 type TaskStatus = "todo" | "in-progress" | "done";
@@ -44,38 +45,27 @@ function getStatusLabel(status: TaskStatus) {
   }
 }
 
-function getPriorityColor(priority: TaskPriority) {
-  switch (priority) {
-    case 1:
-      return "text-red-400";
-    case 2:
-      return "text-yellow-400";
-    case 3:
-      return "text-green-400";
-  }
-}
-
 export default function Tasks() {
   const [filter, setFilter] = useState<TaskStatus | "all">("all");
 
   useKeyboard((e) => {
-  if (e.target instanceof HTMLInputElement) return;
+    if (e.target instanceof HTMLInputElement) return;
 
-  switch (e.key) {
-    case "1":
-      setFilter("all");
-      break;
-    case "2":
-      setFilter("todo");
-      break;
-    case "3":
-      setFilter("in-progress");
-      break;
-    case "4":
-      setFilter("done");
-      break;
-  }
-});
+    switch (e.key) {
+      case "1":
+        setFilter("all");
+        break;
+      case "2":
+        setFilter("todo");
+        break;
+      case "3":
+        setFilter("in-progress");
+        break;
+      case "4":
+        setFilter("done");
+        break;
+    }
+  });
 
 
   const filteredTasks =
@@ -119,27 +109,11 @@ export default function Tasks() {
           )
         }
         {filteredTasks.length > 0 &&
-        filteredTasks.map((task) => (
-        <div
-          key={task.id}
-          className="flex items-center justify-between rounded border border-neutral-800 bg-neutral-900 px-4 py-3"
-        >
-          <div className="flex flex-col">
-            <span className="text-sm font-medium">
-              {task.title}
-            </span>
-            <span className="text-xs text-neutral-400">
-              {getStatusLabel(task.status)}
-            </span>
-          </div>
+          filteredTasks.map((task) => (
+            <TaskItem key={task.id} task={task} />
+          ))
+        }
 
-          <div className="flex items-center gap-4 text-xs">
-            <span className={getPriorityColor(task.priority)}>
-              P{task.priority}
-            </span>
-          </div>
-        </div>
-        ))}
       </div>
     </section>
   );
