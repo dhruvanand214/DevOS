@@ -44,6 +44,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAppContext() {
     const ctx = useContext(AppContext);
     if (!ctx) {

@@ -3,7 +3,7 @@ import { useAppContext } from "../context/AppContext";
 import { useKeyboard } from "../hooks/useKeyboard";
 import { fetchNotes, updateNote } from "../utils/api";
 
-interface Note {
+export interface Note {
   id: string;
   title: string;
   content: string;

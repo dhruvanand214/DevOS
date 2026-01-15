@@ -8,7 +8,7 @@ import { createTask, fetchTasks } from "../utils/api";
 type TaskStatus = "todo" | "in-progress" | "done";
 type TaskPriority = 1 | 2 | 3;
 
-interface Task {
+export interface Task {
   id: string;
   title: string;
   status: TaskStatus;
