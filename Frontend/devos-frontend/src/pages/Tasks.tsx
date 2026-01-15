@@ -1,5 +1,8 @@
+import CreateTaskRow from "../components/CreateTaskRow";
 import TaskItem from "../components/TaskItem";
+import { useAppContext } from "../context/AppContext";
 import { useKeyboard } from "../hooks/useKeyboard";
+import { useState } from "react";
 
 type TaskStatus = "todo" | "in-progress" | "done";
 type TaskPriority = 1 | 2 | 3;
@@ -10,29 +13,6 @@ interface Task {
   status: TaskStatus;
   priority: TaskPriority;
 }
-
-const mockTasks: Task[] = [
-  {
-    id: "1",
-    title: "Design DevOS app shell",
-    status: "done",
-    priority: 2,
-  },
-  {
-    id: "2",
-    title: "Implement Tasks UI",
-    status: "in-progress",
-    priority: 1,
-  },
-  {
-    id: "3",
-    title: "Add keyboard navigation",
-    status: "todo",
-    priority: 3,
-  },
-];
-
-import { useState } from "react";
 
 function getStatusLabel(status: TaskStatus) {
   switch (status) {
@@ -47,6 +27,42 @@ function getStatusLabel(status: TaskStatus) {
 
 export default function Tasks() {
   const [filter, setFilter] = useState<TaskStatus | "all">("all");
+  const { isCreatingTask, cancelCreateTask } = useAppContext();
+  const [tasks, setTasks] = useState<Task[]>([
+    {
+      id: "1",
+      title: "Design DevOS app shell",
+      status: "done",
+      priority: 2,
+    },
+    {
+      id: "2",
+      title: "Implement Tasks UI",
+      status: "in-progress",
+      priority: 1,
+    },
+    {
+      id: "3",
+      title: "Add keyboard navigation",
+      status: "todo",
+      priority: 3,
+    },
+  ]);
+
+  function handleCreateTask(title: string) {
+    setTasks((prev) => [
+      {
+        id: crypto.randomUUID(),
+        title,
+        status: "todo",
+        priority: 2,
+      },
+      ...prev,
+    ]);
+
+    cancelCreateTask();
+  }
+
 
   useKeyboard((e) => {
     if (e.target instanceof HTMLInputElement) return;
@@ -70,9 +86,8 @@ export default function Tasks() {
 
   const filteredTasks =
     filter === "all"
-      ? mockTasks
-      : mockTasks.filter((task) => task.status === filter);
-
+      ? tasks
+      : tasks.filter((task) => task.status === filter);
 
   return (
     <section>
@@ -101,6 +116,8 @@ export default function Tasks() {
       </header>
 
       <div className="space-y-2">
+        {isCreatingTask && <CreateTaskRow onCreate={handleCreateTask} onCancel={cancelCreateTask} />}
+
         {
           filteredTasks.length === 0 && (
             <p className="text-sm text-neutral-500 mt-4">
