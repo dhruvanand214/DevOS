@@ -1,5 +1,5 @@
-const Note = require("../models/note.model");
+const Note = require("../models/notes.model.js");
 
-exports.getNotes = () => Note.find().sort({ updatedAt: -1 });
-exports.updateNote = (id, data) =>
+exports.getNotesService = () => Note.find().sort({ updatedAt: -1 });
+exports.updateNoteService = (id, data) =>
   Note.findByIdAndUpdate(id, data, { new: true });

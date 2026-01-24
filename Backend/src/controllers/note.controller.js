@@ -1,11 +1,11 @@
-const service = require("../services/note.service");
+import { getNotesService, updateNoteService } from "../services/notes.service.js";
 
-exports.getNotes = async (req, res) => {
-  const notes = await service.getNotes();
+export async function getNotes(req, res) {
+  const notes = await getNotesService();
   res.json(notes);
-};
+}
 
-exports.updateNote = async (req, res) => {
-  const note = await service.updateNote(req.params.id, req.body);
+export async function updateNote(req, res) {
+  const note = await updateNoteService(req.params.id, req.body);
   res.json(note);
-};
+}
